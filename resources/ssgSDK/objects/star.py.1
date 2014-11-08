@@ -1,0 +1,65 @@
+##############################################################################
+#                                                                            #
+#  This file is part of SonSilentSea, a free ships based combatr game.       #
+#  Copyright (C) 2014  Jose Luis Cercos Pita <jlcercos@gmail.com>            #
+#                                                                            #
+#  AQUAgpusph is free software: you can redistribute it and/or modify        #
+#  it under the terms of the GNU General Public License as published by      #
+#  the Free Software Foundation, either version 3 of the License, or         #
+#  (at your option) any later version.                                       #
+#                                                                            #
+#  AQUAgpusph is distributed in the hope that it will be useful,             #
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of            #
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
+#  GNU General Public License for more details.                              #
+#                                                                            #
+#  You should have received a copy of the GNU General Public License         #
+#  along with AQUAgpusph.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                            #
+##############################################################################
+
+import bpy
+
+NAME = 'Star'
+DESCRIPION = 'Static object'
+
+
+def generateProperties():
+    pass
+
+
+def updateValues():
+    pass
+
+
+def generateObjectProperties(update_callback):
+    pass
+
+
+def createPhysics():
+    obj = bpy.context.active_object
+
+    obj.game.physics_type = 'STATIC'
+
+    # Set the sphere as collision bounds
+    obj.game.use_collision_bounds = True
+    obj.game.collision_bounds_type = 'SPHERE'
+
+    # Let the last 2 object collision masks for non collisionable objects
+    mask = list(obj.game.collision_group)
+    mask[-1] = False
+    mask[-2] = False
+    obj.game.collision_group = mask
+    mask = list(obj.game.collision_mask)
+    mask[-1] = False
+    mask[-2] = False
+    obj.game.collision_mask = mask
+
+    
+def create():
+    generateProperties()
+    createPhysics()
+
+
+def draw(context, layout):
+    pass

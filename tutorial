@@ -1,0 +1,256 @@
+   /====   /====    /====\
+  /       /        /     |
+  |       |       /
+  \       \       |
+   \===\   \===\  |     ===
+        \       \ |      |
+        |       | \      |
+        /       /  \     /
+   ====/   ====/    \===/     CREACION DEL SDK
+
+
+Preparacion de Blender
+======================
+* Abrir blender (desde una terminal)
+* Elegir Game Logic
+* Elegir "Blender Game" como renderer
+* Presionar 'N'
+* Bajar a shading, desplegar y cambiar de mutitexture a GLSL
+* File/save startup
+   
+Creacion de la escena principal
+===============================
+
+* Abrir blender (desde una terminal)
+* Elegir Game Logic
+* Elegir "Blender Game" como renderer
+* Presionar 'N'
+* Bajar a shading, desplegar y cambiar de mutitexture a GLSL
+* File/save startup??
+* Borrar el cubo y la luz
+* Seleccionar la camara, y borrar angulos y posiciones
+* Subimos la camara a (0, 0, 50)
+* Presionar 0 para activar la vista desde la camara
+* Cambiar (en el 3D view) de solid a texture
+* En el menu properties ir a "world"
+* Cambiar el color del horizonte de gris a negro, y añadir un poco de iluminacion ambiental
+* En la fisica cambiar la gravedad a 0.0, y aumentar los substeps a 5
+* Guardamos como main.blend
+
+Creacion de la entidad sun
+==========================
+
+* Creamos la carpeta resources/entities
+* Abrimos un nuevo blender, seleccionamos todo y borramos
+* Creamos un Empty/arrows, y los llamamos 'Sun'
+* Jugueteamos un poco con la fisica
+* Guardamos como 'sun.blend'
+
+Creacion del ssgSDK
+===================
+
+* Creamos la carpeta resources/ssgSDK
+* Creamos __init__.py (__init__.py.0)
+* File/User Preferences...
+* Addons
+* Install from file...
+* Seleccionamos __init__.py, y aceptamos
+* Vamos a la terminal y miramos donde lo ha copiado, y lo borramos
+* Abrimos una terminal y copiamos toda la carpeta alli
+rm -rf ~/.config/blender/2.71/scripts/addons/ssgSDK; cp -r ssgSDK ~/.config/blender/2.71/scripts/addons/
+* Reiniciamos blender
+* File/User Preferences...
+*       Addons
+*               Community
+*                       Game engine
+* Marcamos el addon, y salvamos las opciones
+
+Creacion del objecto basico star
+================================
+
+* Creamos la carpeta resources/ssgSDK/objects
+* Creamos el archivo vacio resources/ssgSDK/objects/__init__.py (nunca mas nos referimos a el)
+* Creamos el archivo resources/ssgSDK/objects/star.py (star.py.0)
+
+Creacion del selector de entidades (combo box)
+==============================================
+
+* Volvemos a __init__.py e importamos los objetos (__init__.py.1)
+import ssgSDK.objects as objects
+* Creamos la lista de modulos
+* Creamos y llamamos a generateObjectProperties, para crear 'types' (el combo box)
+* Creamos setObject y updateValues (sin nada del script todavia)
+* Creamos getModule()
+* Por ultimo actualizamos draw para que muestre el combo box y lo que necesite cada modulo
+
+Creacion de las propiedades fisicas de star
+===========================================
+
+* Abrimos blender y nos ponemos encima de physics type para que nos diga como se accede a ello y se edita
+* Buscamos physics_type en blender 2.7 api
+"""
+    NO_COLLISION No Collision, Disable collision for this object.
+    STATIC Static, Stationary object.
+    DYNAMIC Dynamic, Linear physics.
+    RIGID_BODY Rigid Body, Linear and angular physics.
+    SOFT_BODY Soft Body, Soft body.
+    OCCLUDE Occlude, Occluder for optimizing scene rendering.
+    SENSOR Sensor, Collision Sensor, detects static and dynamic objects but not the other collision sensor objects.
+    NAVMESH Navigation Mesh, Navigation mesh.
+    CHARACTER Character, Simple kinematic physics appropriate for game characters.
+"""
+* Volvemos a star.py y creamos createPhysics, llamandola desde create (star.py.1)
+(Explicar lo de los grupos de collision y lo de los collision bounds)
+
+Creacion del script de star
+===========================
+
+* Creamos la carpeta resources/ssgSDK/scripts
+* Creamos el archivo resources/ssgSDK/scripts/ssg_star.py
+(Explicar que dicha clase solo tendra un metodo para informar del nombre de su tipo)
+* Creamos utils.py
+* Volvemos a star.py, importamos utils, y añadimos script name y class name (star.py.2)
+* Creamos loadScript y lo llamamos desde create y desde updateValues
+
+Creacion de la logica de star
+=============================
+
+* Volvemos a star.py y creamos createLogic, y la llamamos desde create (star.py)
+
+Creacion del objeto trasnmutable comun
+======================================
+
+* Creamos el archivo resources/ssgSDK/scripts/ssg_object.py
+(Explicar)
+* Volvemos a __init__.py, importamos utils (utils.py), y creamos loadScript llamandola desde setObject (__init__.py.2)
+(Añadir tambien getValidName)
+* Ahora lo mismo con createLogic
+
+
+   /====   /====    /====\
+  /       /        /     |
+  |       |       /
+  \       \       |
+   \===\   \===\  |     ===
+        \       \ |      |
+        |       | \      |
+        /       /  \     /
+   ====/   ====/    \===/     CREACION DEL SOL Y CARGADO EN MAIN
+
+
+Sun viewable
+============
+
+* Abrimos gimp y creamos un simple halo (offset = 64?). Lo guradamos junto a sun.blend como sun.png
+* Vamos a sun.blend y creamos un plano (subirlo un poco en z)
+* Establecemos el plano como 'No collision'
+* Creamos un material (lo llamamos Sun). Emit=1, Transparency=True, Object Color=True
+* Creamos una nueva textura (la llamamos Sun) con la imagen afectando al alpha como multiply (Cuidado con Use Alpha en el color!)
+* Linkamos el plano al objeto (Ctrl+p)
+* Convertimos el objeto mediante el SDK
+* Nos ponemos en una capa auxiliar
+* Guardamos
+
+Masa del sol
+============
+
+Al ser un objeto estatico no tiene una propiedad "masa" (o es cero). Vamos a introducirla como una propiedad de objeto (star.py.3)
+* Vamos a star y añadimos la propiedad en generateObjectProperties() y generateProperties()
+* Ahora las linkamos en updateValues()
+* Y añadimos la masa en draw()
+* Por ultimo vamos a nuestro sun.blend, y establecemos 'Sun' como typo 'star'
+
+Cargando objetos desde main
+===========================
+
+* Creamos un objeto vacio llamado 'Origin' (donde apareceran todos los objetos)
+* Creamos game.py (game.py.0)
+*       Recogemos la camara y la escena
+*       Creamos _locate_resource(file_name)
+*       Creamos load_blender_file(file_name):
+*       Recogemos el objeto 'Origin'
+*       Cargamos el sol
+* Abrimos game.py en main.blend
+* Creamos un Always, y el script de python y los conectamos
+
+
+   /====   /====    /====\
+  /       /        /     |
+  |       |       /
+  \       \       |
+   \===\   \===\  |     ===
+        \       \ |      |
+        |       | \      |
+        /       /  \     /
+   ====/   ====/    \===/     CREACION DE LA ENTIDAD PLANET
+
+
+Creando el objeto
+=================
+
+* Copiamos star.py como planet.py
+* Cambiamos el nombre, la descripcion, etc...
+* Quitamos la propiedad mass (generateProperties, updateValues, generateObjectProperties, draw)
+* Cambiamos la fisica a rigid body
+
+Creando el script
+=================
+
+* Copiamos ssg_star.py como ssg_planet.py
+* Cambiamos ssgStar por ssgPlanet...
+* Creamos un constructor __init__ donde se establezca self['mass']
+* Calculamos una constante G que nos convenga
+* Creamos gravity()
+* Actualizamos update()
+
+
+   /====   /====    /====\
+  /       /        /     |
+  |       |       /
+  \       \       |
+   \===\   \===\  |     ===
+        \       \ |      |
+        |       | \      |
+        /       /  \     /
+   ====/   ====/    \===/     CREACION DE LA TIERRA Y LA LUNA
+
+
+Creando la tierra
+=================
+
+* Creamos un nuevo archivo de blender llamado earth.blend
+* Creamos el objeto empty 'Earth', y lo establecemos como tipo planeta
+mass = 0.05
+radius = 0.4
+form = 1.0
+Damping = 0.0 (rot and trans)
+* Nos vamos a otra capa y creamos una esfera
+* Presionamos 'T'
+* Establecemos el radio a 0.4
+* Shading = smooth
+* Establecemos su fisica como 'No collision'
+* Activamos la otra capa y linkamos los objetos, y volvemos a desactivar la primera capa
+* Creamos un material 'Earth' (Shadeless), y una textura 'Earth'
+* Seleccionamos la esfera, y presionamos tab
+* Nos ponemos en la vista frontal (1)
+* Presionamos U, y seleccionamos Sphere Projection
+* Presionamos tab de nuevo
+* Cambiamos la textura a UV
+* Establecemos una rotacion alrededor de 'y' de 23º
+* Creamos un nuevo script llamado earth_rot.py
+* Creamos un always y un python, y que lo ejecute a cada frame
+* Vamos a una capa inactiva y guardamos
+
+Cargando la tierra en main
+==========================
+
+* Cargamos la tierra en game.py
+* Actualizamos main.blend
+* Jugamos con k
+* Jugamos con los FPS en el main
+
+Creando la luna y cargandola
+============================
+
+* Repetimos con la luna
+
